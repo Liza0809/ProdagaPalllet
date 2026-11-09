@@ -1,0 +1,122 @@
+﻿<Window x:Class="pallet.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:pallet"
+        mc:Ignorable="d"
+        Title="Авторизация — Продажа паллет"
+        Height="640" Width="640"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="6"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Декоративный градиент сверху -->
+        <Border Grid.Row="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#6A1B9A" Offset="0"/>
+                    <GradientStop Color="#9C27B0" Offset="0.5"/>
+                    <GradientStop Color="#CE93D8" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <StackPanel Grid.Row="1"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Width="400">
+
+            <!-- Логотип -->
+            <Border Width="100" Height="100"
+                    Background="{StaticResource PrimaryBrush}"
+                    CornerRadius="0"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,20">
+                <Image Source="image.png"
+                       Width="90" Height="90"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center" Margin="4,0,0,0"/>
+            </Border>
+
+            <!-- Заголовок -->
+            <TextBlock Text="Продажа паллет"
+                       FontSize="30" FontWeight="Bold"
+                       Foreground="{StaticResource PrimaryDarkBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8"/>
+
+            <!-- Кнопка "Гость" -->
+            <Button x:Name="BtnGuest"
+                    Content="Войти как гость"
+                    Height="48"
+                    Style="{StaticResource SecondaryButton}"
+                    Margin="0,0,0,12"
+                    Click="BtnGuest_Click"/>
+
+            <!-- Кнопка "Пользователь" -->
+            <Button x:Name="BtnUser"
+                    Content="Войти как пользователь"
+                    Height="48"
+                    Style="{StaticResource PrimaryButton}"
+                    Margin="0,0,0,20"
+                    Click="BtnUser_Click"/>
+
+            <!-- Панель ввода логина -->
+            <Border x:Name="LoginPanel"
+                    Visibility="Collapsed"
+                    Background="White"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1.5"
+                    CornerRadius="0"
+                    Padding="25"
+                    Margin="0,10,0,0">
+
+                <StackPanel>
+                    <TextBlock Text="Введите логин"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               Margin="0,0,0,10"/>
+
+                    <TextBox x:Name="TxtLogin"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,0,12"/>
+
+                    <TextBlock x:Name="TxtError"
+                               Foreground="#D32F2F" FontSize="12"
+                               Visibility="Collapsed"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <Button Content="Войти"
+                                Width="110" Height="38"
+                                Style="{StaticResource PrimaryButton}"
+                                Margin="0,0,10,0"
+                                Click="BtnLogin_Click"/>
+                        <Button Content="Отмена"
+                                Width="110" Height="38"
+                                Style="{StaticResource SecondaryButton}"
+                                Click="BtnCancel_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Кнопка выхода -->
+            <Button Content="Выход"
+                    Width="130" Height="38"
+                    Margin="0,25,0,0"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource SecondaryButton}"
+                    Click="BtnExit_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,12 @@
+# Visual Studio / .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+packages/
+*.nupkg
+
+# ОС
+Thumbs.db
+desktop.ini

@@ -1,0 +1,1266 @@
+﻿<Window x:Class="pallet.CartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:pallet"
+        mc:Ignorable="d"
+        Title="Корзина"
+        Height="760" Width="1100"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ЗАГОЛОВОК -->
+        <Border Grid.Row="0" Padding="20,14">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#6A1B9A" Offset="0"/>
+                    <GradientStop Color="#8E24AA" Offset="0.6"/>
+                    <GradientStop Color="#AB47BC" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🛒"
+                           FontSize="22"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0"/>
+                <TextBlock x:Name="TxtHeaderTitle"
+                           Text="Корзина"
+                           FontSize="19" FontWeight="Bold"
+                           Foreground="White"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+        <!-- ================== РЕЖИМ 1: КОРЗИНА ========================= -->
+        <Grid x:Name="CartView" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ScrollViewer Grid.Row="0"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
+                <StackPanel>
+                    <Border x:Name="EmptyPanel"
+                            Visibility="Collapsed"
+                            Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="40"
+                            Margin="0,20,0,0">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🛒"
+                                       FontSize="60"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,15"/>
+                            <TextBlock Text="Корзина пуста"
+                                       FontSize="18" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryDarkBrush}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock Text="Добавьте товары из каталога"
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ItemsControl x:Name="CartList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1.5"
+                                        CornerRadius="0"
+                                        Padding="15"
+                                        Margin="0,0,0,12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0"
+                                                Width="70" Height="70"
+                                                CornerRadius="0"
+                                                Background="White"
+                                                BorderBrush="{StaticResource BorderBrush}"
+                                                BorderThickness="1">
+                                            <Image Source="{Binding Product.ImagePath, Converter={StaticResource ImageFallback}}"
+                                                   Width="62" Height="62"
+                                                   Stretch="Uniform"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Margin="15,0">
+                                            <TextBlock Text="{Binding Product.Name}"
+                                                       FontSize="16" FontWeight="Bold"
+                                                       Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                            <TextBlock Text="{Binding Product.Category, StringFormat='Категория: {0}'}"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,3,0,0"/>
+                                            <TextBlock Text="{Binding Product.Price, StringFormat='Цена за шт.: {0:N2} ₽'}"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,2,0,0"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2"
+                                                    Orientation="Horizontal"
+                                                    VerticalAlignment="Center"
+                                                    Margin="15,0">
+                                            <Button Content="−"
+                                                    Width="32" Height="32"
+                                                    FontSize="16" FontWeight="Bold"
+                                                    Style="{StaticResource SecondaryButton}"
+                                                    Padding="0"
+                                                    Tag="{Binding}"
+                                                    Click="BtnDecrease_Click"/>
+
+                                            <TextBox Text="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="60"
+                                                     Height="32"
+                                                     FontSize="14"
+                                                     FontWeight="Bold"
+                                                     TextAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Margin="5,0"
+                                                     BorderBrush="{StaticResource BorderBrush}"
+                                                     BorderThickness="1"
+                                                     Background="White"
+                                                     Foreground="{StaticResource TextPrimaryBrush}"
+                                                     PreviewTextInput="QuantityBox_PreviewTextInput"
+                                                     LostFocus="QuantityBox_LostFocus"/>
+
+                                            <Button Content="+"
+                                                    Width="32" Height="32"
+                                                    FontSize="16" FontWeight="Bold"
+                                                    Style="{StaticResource SecondaryButton}"
+                                                    Padding="0"
+                                                    Tag="{Binding}"
+                                                    Click="BtnIncrease_Click"/>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding LineTotal, StringFormat='{}{0:N2} ₽'}"
+                                                   FontSize="16" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryLightBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Width="120"
+                                                   TextAlignment="Right"
+                                                   Margin="15,0"/>
+
+                                        <Button Grid.Column="4"
+                                                Content="✕"
+                                                Width="34" Height="34"
+                                                FontSize="16" FontWeight="Bold"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Padding="0"
+                                                Margin="10,0,0,0"
+                                                Tag="{Binding}"
+                                                Click="BtnRemove_Click"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="1"
+                    Background="White"
+                    Padding="20,15"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1.5,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Content="Очистить корзину"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Click="BtnClear_Click"/>
+
+                    <StackPanel Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Margin="20,0">
+                        <TextBlock Text="Итого:"
+                                   FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock x:Name="TxtTotal"
+                                   Text="0.00 ₽"
+                                   FontSize="24" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryDarkBrush}"
+                                   HorizontalAlignment="Right"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="3"
+                            x:Name="BtnGoToDelivery"
+                            Content="Мои заказы"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource PrimaryButton}"
+                            Margin="0,0,10,0"
+                            Visibility="Collapsed"
+                            Click="BtnGoToDelivery_Click"/>
+
+                    <Button Grid.Column="4"
+                            Content="Продолжить покупки"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,10,0"
+                            Click="BtnContinue_Click"/>
+
+                    <Button Grid.Column="5"
+                            x:Name="BtnGoCheckout"
+                            Content="Оформить заказ"
+                            Height="42" Padding="25,0"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnGoCheckout_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ============== РЕЖИМ 1.5: РАЗДЕЛЕНИЕ ЗАКАЗА ================= -->
+        <Grid x:Name="SplitView" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Background="#F3E5F5"
+                    BorderBrush="{StaticResource AccentBrush}"
+                    BorderThickness="0,0,0,1.5"
+                    Padding="20,15">
+                <StackPanel>
+                    <TextBlock Text="⚠️ Заказ превышает вместимость одной фуры"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource PrimaryDarkBrush}"
+                               Margin="0,0,0,6"/>
+                    <TextBlock Text="Укажите, сколько штук каждой позиции поедет первой машиной. Лимит — 80 паллетомест. Остальное останется в корзине для второй доставки. Либо выберите «Вывести самому» — тогда весь заказ оформляется как самовывоз."
+                               FontSize="13"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
+                <ItemsControl x:Name="SplitList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White"
+                                    BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1.5"
+                                    CornerRadius="0"
+                                    Padding="15"
+                                    Margin="0,0,0,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0"
+                                            Width="70" Height="70"
+                                            CornerRadius="0"
+                                            Background="White"
+                                            BorderBrush="{StaticResource BorderBrush}"
+                                            BorderThickness="1">
+                                        <Image Source="{Binding Product.ImagePath, Converter={StaticResource ImageFallback}}"
+                                               Width="62" Height="62"
+                                               Stretch="Uniform"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                Margin="15,0">
+                                        <TextBlock Text="{Binding Product.Name}"
+                                                   FontSize="16" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                        <TextBlock Text="{Binding Product.Category, StringFormat='Категория: {0}'}"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Margin="0,3,0,0"/>
+                                        <TextBlock Text="{Binding Quantity, StringFormat='Всего в корзине: {0} шт.'}"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Margin="0,2,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Center"
+                                                Margin="15,0"
+                                                Width="180">
+                                        <TextBlock Text="В эту партию:"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,0,0,4"/>
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center">
+                                            <Button Content="−"
+                                                    Width="28" Height="28"
+                                                    FontSize="14" FontWeight="Bold"
+                                                    Style="{StaticResource SecondaryButton}"
+                                                    Padding="0"
+                                                    Tag="{Binding}"
+                                                    Click="BtnSplitDecrease_Click"/>
+                                            <TextBox Text="{Binding QuantityForSplit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="60"
+                                                     Height="28"
+                                                     FontSize="14"
+                                                     FontWeight="Bold"
+                                                     TextAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     Margin="5,0"
+                                                     BorderBrush="{StaticResource BorderBrush}"
+                                                     BorderThickness="1"
+                                                     Background="White"
+                                                     Foreground="{StaticResource TextPrimaryBrush}"
+                                                     PreviewTextInput="QuantityBox_PreviewTextInput"
+                                                     LostFocus="SplitQuantityBox_LostFocus"/>
+                                            <Button Content="+"
+                                                    Width="28" Height="28"
+                                                    FontSize="14" FontWeight="Bold"
+                                                    Style="{StaticResource SecondaryButton}"
+                                                    Padding="0"
+                                                    Tag="{Binding}"
+                                                    Click="BtnSplitIncrease_Click"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="3"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right"
+                                                Margin="15,0"
+                                                Width="100">
+                                        <TextBlock Text="Объём"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{Binding SplitVolume, StringFormat='{}{0:0.#} мест'}"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryLightBrush}"
+                                                   HorizontalAlignment="Right"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="4"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right"
+                                                Width="120">
+                                        <TextBlock Text="Сумма"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{Binding SplitLineTotal, StringFormat='{}{0:N2} ₽'}"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryDarkBrush}"
+                                                   HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <Border Grid.Row="2"
+                    Background="White"
+                    Padding="20,15"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1.5,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Content="Отметить всё до 80"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Click="BtnAutoSelectSplit_Click"/>
+
+                    <Button Grid.Column="1"
+                            Content="Снять всё"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="10,0,0,0"
+                            Click="BtnClearSplitSelection_Click"/>
+
+                    <Button Grid.Column="2"
+                            Content="🚚 Вывести самому"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="10,0,0,0"
+                            Click="BtnSelfPickup_Click"/>
+
+                    <StackPanel Grid.Column="4"
+                                VerticalAlignment="Center"
+                                Margin="20,0">
+                        <TextBlock Text="Выбрано:"
+                                   FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock x:Name="TxtSplitVolume"
+                                   Text="0 / 80 мест"
+                                   FontSize="20" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryDarkBrush}"
+                                   HorizontalAlignment="Right"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="5"
+                            Content="Отмена"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,10,0"
+                            Click="BtnCancelSplit_Click"/>
+
+                    <Button Grid.Column="6"
+                            x:Name="BtnConfirmSplit"
+                            Content="Оформить первую партию"
+                            Height="42" Padding="25,0"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnConfirmSplit_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== РЕЖИМ 2: ОФОРМЛЕНИЕ ====================== -->
+        <Grid x:Name="CheckoutView" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ScrollViewer Grid.Row="0"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="380"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+
+                        <Border Background="White"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1.5"
+                                CornerRadius="0"
+                                Padding="20"
+                                Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="Данные получателя"
+                                           FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBlock Text="ФИО получателя:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,6"/>
+                                <TextBox x:Name="TxtRecipientName"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+
+                                <TextBlock Text="Телефон:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,6"/>
+                                <TextBox x:Name="TxtRecipientPhone"
+                                         Style="{StaticResource ModernTextBox}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="White"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1.5"
+                                CornerRadius="0"
+                                Padding="20"
+                                Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="Способ доставки"
+                                           FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"
+                                           Margin="0,0,0,15"/>
+
+                                <ComboBox x:Name="CmbDeliveryMethod"
+                                          Style="{StaticResource ModernComboBox}"
+                                          DisplayMemberPath="Name"
+                                          SelectionChanged="CmbDeliveryMethod_SelectionChanged"
+                                          Margin="0,0,0,10"/>
+
+                                <Border x:Name="HintPanel"
+                                        Background="#F3E5F5"
+                                        BorderBrush="{StaticResource AccentBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="0"
+                                        Padding="10"
+                                        Margin="0,0,0,15">
+                                    <TextBlock x:Name="TxtVolumeHint"
+                                               FontSize="12"
+                                               Foreground="{StaticResource PrimaryDarkBrush}"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+
+                                <TextBlock x:Name="LblAddress"
+                                           Text="Адрес доставки:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,6"/>
+                                <TextBox x:Name="TxtAddress"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Height="60"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         VerticalContentAlignment="Top"
+                                         Padding="10,8"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="White"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1.5"
+                                CornerRadius="0"
+                                Padding="20"
+                                Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="Способ оплаты"
+                                           FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"
+                                           Margin="0,0,0,15"/>
+
+                                <ComboBox x:Name="CmbPaymentMethod"
+                                          Style="{StaticResource ModernComboBox}"
+                                          DisplayMemberPath="Name"
+                                          SelectionChanged="CmbPaymentMethod_SelectionChanged"/>
+
+                                <StackPanel x:Name="CardPanel"
+                                            Visibility="Collapsed"
+                                            Margin="0,15,0,0">
+
+                                    <Border Background="#F3E5F5"
+                                            BorderBrush="{StaticResource AccentBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="0"
+                                            Padding="12"
+                                            Margin="0,0,0,15">
+                                        <TextBlock Text="Данные карты защищены и не сохраняются"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource PrimaryDarkBrush}"
+                                                   TextWrapping="Wrap"/>
+                                    </Border>
+
+                                    <TextBlock Text="Номер карты:"
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Margin="0,0,0,6"/>
+                                    <TextBox x:Name="TxtCardNumber"
+                                             Style="{StaticResource ModernTextBox}"
+                                             MaxLength="19"
+                                             Margin="0,0,0,15"
+                                             TextChanged="TxtCardNumber_TextChanged"/>
+
+                                    <Grid Margin="0,0,0,15">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Срок действия:"
+                                                       FontSize="13"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Margin="0,0,0,6"/>
+                                            <TextBox x:Name="TxtCardExpiry"
+                                                     Style="{StaticResource ModernTextBox}"
+                                                     MaxLength="5"
+                                                     TextChanged="TxtCardExpiry_TextChanged"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="CVC / CVV:"
+                                                       FontSize="13"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Margin="0,0,0,6"/>
+                                            <TextBox x:Name="TxtCardCvc"
+                                                     Style="{StaticResource ModernTextBox}"
+                                                     MaxLength="3"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Text="Имя держателя карты:"
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Margin="0,0,0,6"/>
+                                    <TextBox x:Name="TxtCardHolder"
+                                             Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="White"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1.5"
+                                CornerRadius="0"
+                                Padding="20"
+                                Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="Комментарий к заказу"
+                                           FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"
+                                           Margin="0,0,0,15"/>
+
+                                <TextBox x:Name="TxtComment"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Height="80"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         VerticalContentAlignment="Top"
+                                         Padding="10,8"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ПРАВАЯ ПАНЕЛЬ: ИТОГИ -->
+                    <Border Grid.Column="2"
+                            Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="20"
+                            VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Ваш заказ"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryDarkBrush}"
+                                       Margin="0,0,0,15"/>
+
+                            <ItemsControl x:Name="OrderItemsList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Product.Name}"
+                                                           FontSize="13"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                                           TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Quantity, StringFormat='× {0}'}"
+                                                           FontSize="11"
+                                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding LineTotal, StringFormat='{}{0:N2} ₽'}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Top"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="0,1,0,0"
+                                    Margin="0,5,0,10"/>
+
+                            <Grid Margin="0,0,0,5">
+                                <TextBlock Text="Объём заказа:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock x:Name="TxtVolumeSummary"
+                                           Text="0 мест"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,5">
+                                <TextBlock Text="Товары:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock x:Name="TxtSubtotal"
+                                           Text="0.00 ₽"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,5">
+                                <TextBlock Text="Доставка:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock x:Name="TxtDeliveryCost"
+                                           Text="0.00 ₽"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,5">
+                                <TextBlock Text="Готовность:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock x:Name="TxtReadyTime"
+                                           Text="—"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Border BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="0,1,0,0"
+                                    Margin="0,10,0,10"/>
+
+                            <Grid>
+                                <TextBlock Text="Итого:"
+                                           FontSize="15" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                <TextBlock x:Name="TxtGrandTotal"
+                                           Text="0.00 ₽"
+                                           FontSize="20" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryLightBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <!-- ПЛАШКА: Время готовности -->
+                            <Border Background="#F3E5F5"
+                                    BorderBrush="{StaticResource AccentBrush}"
+                                    BorderThickness="1.5"
+                                    CornerRadius="0"
+                                    Padding="15"
+                                    Margin="0,15,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,6">
+                                        <TextBlock Text="⏱"
+                                                   FontSize="18"
+                                                   Foreground="{StaticResource PrimaryDarkBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBlock Text="Время готовности"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource PrimaryDarkBrush}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <TextBlock x:Name="TxtReadyTimeBig"
+                                               Text="—"
+                                               FontSize="22"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryDarkBrush}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,4"/>
+
+                                    <TextBlock x:Name="TxtReadyTimeHint"
+                                               Text=""
+                                               FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+
+            <Border Grid.Row="1"
+                    Background="White"
+                    Padding="20,15"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1.5,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="1"
+                            Content="Назад в корзину"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,10,0"
+                            Click="BtnBackToCart_Click"/>
+
+                    <Button Grid.Column="2"
+                            x:Name="BtnConfirm"
+                            Content="Подтвердить заказ"
+                            Height="42" Padding="30,0"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnConfirm_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ============== РЕЖИМ 3: СПИСОК ЗАКАЗОВ ====================== -->
+        <Grid x:Name="OrdersListView" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ScrollViewer Grid.Row="0"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
+                <StackPanel>
+                    <Border x:Name="EmptyOrdersPanel"
+                            Visibility="Collapsed"
+                            Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="40"
+                            Margin="0,20,0,0">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="📦"
+                                       FontSize="60"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,15"/>
+                            <TextBlock Text="У вас пока нет заказов"
+                                       FontSize="18" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryDarkBrush}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock Text="Оформите первый заказ из корзины"
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ItemsControl x:Name="OrdersList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1.5"
+                                        CornerRadius="0"
+                                        Padding="18"
+                                        Margin="0,0,0,12"
+                                        Cursor="Hand"
+                                        MouseLeftButtonUp="OrderCard_Click">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding OrderNumber}"
+                                                           FontSize="16" FontWeight="Bold"
+                                                           Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                                <Border Background="#F3E5F5"
+                                                        CornerRadius="0"
+                                                        Padding="8,2"
+                                                        Margin="12,0,0,0"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding ClientStatus}"
+                                                               FontSize="11"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{Binding StatusID, Converter={StaticResource OrderStatusColor}}"/>
+                                                </Border>
+                                            </StackPanel>
+
+                                            <TextBlock Text="{Binding OrderDate, StringFormat='Оформлен: {0:dd.MM.yyyy HH:mm}'}"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,6,0,0"/>
+
+                                            <TextBlock Text="{Binding DeliveryMethod, StringFormat='Доставка: {0}'}"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,2,0,0"/>
+
+                                            <TextBlock Text="{Binding Address, StringFormat='Адрес: {0}'}"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,2,0,0"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Margin="20,0">
+                                            <TextBlock Text="Сумма"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding Total, StringFormat='{}{0:N2} ₽'}"
+                                                       FontSize="20" FontWeight="Bold"
+                                                       Foreground="{StaticResource PrimaryLightBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="›"
+                                                   FontSize="30"
+                                                   Foreground="{StaticResource PrimaryLightBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10,0,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="1"
+                    Background="White"
+                    Padding="20,15"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1.5,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="1"
+                            Content="Назад в корзину"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Click="BtnBackFromOrders_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================== РЕЖИМ 4: ДЕТАЛИ ЗАКАЗА =================== -->
+        <Grid x:Name="DeliveryView" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ScrollViewer Grid.Row="0"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
+                <StackPanel>
+
+                    <Border Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="25"
+                            Margin="0,0,0,15">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,0,0,15">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Заказ успешно оформлен!"
+                                               FontSize="22" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                    <TextBlock x:Name="TxtOrderNumber"
+                                               Text="Номер заказа: —"
+                                               FontSize="14"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Border Background="#F3E5F5"
+                                    CornerRadius="0"
+                                    Padding="15,10"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Статус:"
+                                               FontSize="13"
+                                               Foreground="{StaticResource PrimaryDarkBrush}"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock x:Name="TxtOrderStatus"
+                                               Text="Оформлен"
+                                               FontSize="15" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryLightBrush}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="20"
+                            Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Информация о доставке"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryDarkBrush}"
+                                       Margin="0,0,0,15"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="Получатель:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                           x:Name="TxtInfoRecipient"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="Телефон:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1"
+                                           x:Name="TxtInfoPhone"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="Способ доставки:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1"
+                                           x:Name="TxtInfoDelivery"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0"
+                                           Text="Готовность:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1"
+                                           x:Name="TxtInfoReadyAt"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0"
+                                           Text="Адрес:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1"
+                                           x:Name="TxtInfoAddress"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           TextWrapping="Wrap"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="20"
+                            Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Информация об оплате"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryDarkBrush}"
+                                       Margin="0,0,0,15"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="Способ оплаты:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                           x:Name="TxtInfoPayment"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="Товары:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1"
+                                           x:Name="TxtInfoSubtotal"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,8"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="Доставка:"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1"
+                                           x:Name="TxtInfoDeliveryCost"
+                                           FontSize="13"
+                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </Grid>
+
+                            <Border BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="0,1,0,0"
+                                    Margin="0,15,0,10"/>
+
+                            <Grid>
+                                <TextBlock Text="ИТОГО:"
+                                           FontSize="15" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                <TextBlock x:Name="TxtInfoTotal"
+                                           Text="0.00 ₽"
+                                           FontSize="20" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryLightBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="White"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="0"
+                            Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="Состав заказа"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource PrimaryDarkBrush}"
+                                       Margin="0,0,0,15"/>
+
+                            <ItemsControl x:Name="DeliveryItemsList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Product.Name}"
+                                                           FontSize="13"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding Quantity, StringFormat='× {0}'}"
+                                                           FontSize="11"
+                                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding LineTotal, StringFormat='{}{0:N2} ₽'}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="1"
+                    Background="White"
+                    Padding="20,15"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1.5,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="1"
+                            Content="← Назад к списку"
+                            Height="42" Padding="20,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,10,0"
+                            Click="BtnBackToOrders_Click"/>
+
+                    <Button Grid.Column="2"
+                            Content="Скачать чек (PDF)"
+                            Height="42" Padding="25,0"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,10,0"
+                            Click="BtnDownloadReceipt_Click"/>
+
+                    <Button Grid.Column="3"
+                            Content="Закрыть"
+                            Height="42" Padding="30,0"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="BtnClose_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
